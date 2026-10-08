@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover"
+    />
+    <title>Time Tracker</title>
+    <link rel="manifest" href="manifest.webmanifest" />
+    <meta name="theme-color" content="#6366f1" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta
+      name="apple-mobile-web-app-status-bar-style"
+      content="black-translucent"
+    />
+    <meta name="apple-mobile-web-app-title" content="Time Tracker" />
+    <link rel="apple-touch-icon" href="icons/icon-192.png" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header>
+      <div>
+        <h1 id="ttl">Timer</h1>
+        <small id="dt"></small>
+      </div>
+      <button id="install" hidden>⬇ Install</button>
+    </header>
+    <div id="offline" hidden>
+      📡 You're offline, but your data is safe on this device.
+    </div>
+    <main>
+      <section id="t-timer">
+        <div class="card hero" id="hero">
+          <div id="clock">00:00:00</div>
+          <p id="rs" class="sub"></p>
+          <select id="tp" aria-label="Project"></select>
+          <input
+            id="tn"
+            placeholder="What are you working on?"
+            autocomplete="off"
+          />
+          <button id="go" class="pri big">▶ Start</button
+          ><button id="dc" class="ghost" hidden>Discard this timer</button>
+        </div>
+        <div class="stats">
+          <span><b id="sT">0h 00m</b>Today</span
+          ><span><b id="sW">0h 00m</b>This week</span
+          ><span><b id="sE">0</b>Earned today</span>
+        </div>
+        <h3>Today</h3>
+        <ul id="today" class="list"></ul>
+        <p id="te" class="empty" hidden>
+          No entries yet today. Press Start to begin.
+        </p>
+      </section>
+      <section id="t-log" hidden>
+        <button id="addE" class="pri wide">+ Add manual entry</button>
+        <div id="log"></div>
+        <p id="le" class="empty" hidden>No time entries yet.</p>
+      </section>
+      <section id="t-rep" hidden>
+        <div class="seg" id="rm">
+          <button data-m="week">Week</button
+          ><button data-m="month">Month</button>
+        </div>
+        <div class="rn">
+          <button id="rPrev" aria-label="Previous">‹</button><b id="rLab"></b
+          ><button id="rNext" aria-label="Next">›</button>
+        </div>
+        <div class="stats">
+          <span><b id="rH"></b>Total</span><span><b id="rM"></b>Billable</span
+          ><span><b id="rN"></b>Entries</span>
+        </div>
+        <div class="card"><div id="chart"></div></div>
+        <h3>By project</h3>
+        <div class="card" id="bd"></div>
+      </section>
+      <section id="t-proj" hidden>
+        <button id="addP" class="pri wide">+ New project</button>
+        <ul id="pl" class="list anim"></ul>
+      </section>
+      <section id="t-set" hidden>
+        <div class="card">
+          <div class="set">
+            <span>Theme</span
+            ><select id="thSel">
+              <option value="auto">Auto</option>
+              <option value="light">Light</option>
+              <option value="dark">Dark</option>
+            </select>
+          </div>
+          <div class="set">
+            <span>Currency symbol</span><input id="cur" maxlength="3" />
+          </div>
+          <div class="btns">
+            <button id="xCsv">⬆ Export CSV</button
+            ><button id="xBk">⬆ Backup</button
+            ><button id="iBk">⬇ Restore</button
+            ><button id="clrE" class="danger">🗑 Delete all entries</button
+            ><input id="file" type="file" accept=".json" hidden />
+          </div>
+          <p class="sub">
+            All data is stored only on this device. Export a backup now and
+            then.
+          </p>
+        </div>
+      </section>
+    </main>
+    <nav id="nav">
+      <button data-t="timer"><span>⏱</span>Timer</button
+      ><button data-t="log"><span>📋</span>Log</button
+      ><button data-t="rep"><span>📊</span>Reports</button
+      ><button data-t="proj"><span>📁</span>Projects</button
+      ><button data-t="set"><span>⚙️</span>Settings</button>
+    </nav>
+    <div id="toast"><span id="tm"></span><button id="undo">Undo</button></div>
+    <dialog id="de">
+      <form id="fe" method="dialog">
+        <h3>Time entry</h3>
+        <label>Project<select id="ePrj"></select></label>
+        <label>Date<input id="eDate" type="date" required /></label>
+        <div class="row">
+          <label>Start<input id="eStart" type="time" required /></label
+          ><label>End<input id="eEnd" type="time" required /></label>
+        </div>
+        <label
+          >Note<input id="eNote" placeholder="What did you work on?"
+        /></label>
+        <label
+          >Billing<select id="eBill">
+            <option value="1">Billable</option>
+            <option value="0">Non-billable</option>
+          </select></label
+        >
+        <p class="err" id="eErr"></p>
+        <div class="acts">
+          <button value="save" class="pri">Save</button
+          ><button value="cancel" formnovalidate>Cancel</button
+          ><button value="del" id="eDel" formnovalidate class="danger">
+            Delete
+          </button>
+        </div>
+      </form>
+    </dialog>
+    <dialog id="dp">
+      <form method="dialog">
+        <h3>Project</h3>
+        <label>Name<input id="pName" required /></label>
+        <label>Client<input id="pClient" placeholder="Optional" /></label>
+        <label
+          >Hourly rate<input
+            id="pRate"
+            type="number"
+            inputmode="decimal"
+            min="0"
+            step="any"
+            placeholder="0"
+        /></label>
+        <label>Color</label>
+        <div id="pColors"></div>
+        <div class="acts">
+          <button value="save" class="pri">Save</button
+          ><button value="cancel" formnovalidate>Cancel</button
+          ><button value="arch" id="pArch" formnovalidate>Archive</button
+          ><button value="del" id="pDel" formnovalidate class="danger">
+            Delete
+          </button>
+        </div>
+      </form>
+    </dialog>
+    <script src="app.js"></script>
+  </body>
+</html>
